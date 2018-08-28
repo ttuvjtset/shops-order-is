@@ -1,0 +1,19 @@
+plugins {
+    id 'war'
+    id 'org.gretty' version '2.2.0'
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+sourceCompatibility = 10
+
+dependencies {
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+}
+
+gretty {
+    contextPath = '/'
+}
