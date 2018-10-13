@@ -14,51 +14,49 @@ import java.util.concurrent.atomic.AtomicInteger;
 @WebServlet(value = {"/api/orders", "/orders/form"})
 public class HelloServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private AtomicInteger atomicInteger = new AtomicInteger(1);
+    private HashMap<Integer, Order> orders = new HashMap<>();
 
-    AtomicInteger atomicInteger = new AtomicInteger(1);
-    HashMap<Integer, Order> orders = new HashMap<>();
-
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if (request.getRequestURI().equals("/api/orders")) {
+            if (request.getParameterMap().containsKey("id")) {
+                int parsedKey = Integer.parseInt(request.getParameter("id"));
 
-        if (request.getParameterMap().containsKey("id")) {
-            String orderID = request.getParameter("id");
-            int parsedKey = Integer.parseInt(orderID);
-
-            if (orders.containsKey(parsedKey)) {
-                Order orderByID = orders.get(parsedKey);
-                response.setHeader("Content-Type", "application/json");
-                response.getWriter().print(new ObjectMapper().writeValueAsString(orderByID));
+                if (orders.containsKey(parsedKey)) {
+                    Order orderByID = orders.get(parsedKey);
+                    response.setHeader("Content-Type", "application/json");
+                    response.getWriter().print(new ObjectMapper().writeValueAsString(orderByID));
+                }
             }
         }
-
-
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        if (req.getRequestURI().equals("/api/orders")) {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (request.getRequestURI().equals("/api/orders")) {
+            Integer newID = atomicInteger.getAndIncrement();
 
             ObjectMapper mapper = new ObjectMapper();
-            Order order = mapper.readValue(req.getInputStream(), Order.class);
-            Integer newID = atomicInteger.getAndIncrement();
+            Order order = mapper.readValue(request.getInputStream(), Order.class);
             order.setId(String.valueOf(newID));
             orders.put(newID, order);
-            resp.setHeader("Content-Type", "application/json");
-            resp.getWriter().print(new ObjectMapper().writeValueAsString(order));
+
+            response.setHeader("Content-Type", "application/json");
+            response.getWriter().print(new ObjectMapper().writeValueAsString(order));
         }
 
-        if (req.getRequestURI().equals("/orders/form")) {
-            String orderNumber = req.getParameter("orderNumber");
-            Order order = new Order();
+        if (request.getRequestURI().equals("/orders/form")) {
             Integer newID = atomicInteger.getAndIncrement();
+
+            Order order = new Order();
             order.setId(String.valueOf(newID));
-            order.setOrderNumber(orderNumber);
+            order.setOrderNumber(request.getParameter("orderNumber"));
             orders.put(newID, order);
-            resp.setHeader("Content-Type", "application/json");
-            resp.getWriter().print(order.getId());
+
+            response.setHeader("Content-Type", "application/json");
+            response.getWriter().print(order.getId());
         }
     }
 

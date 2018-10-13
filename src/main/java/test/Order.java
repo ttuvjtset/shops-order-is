@@ -12,6 +12,6 @@ import java.util.ArrayList;
 public class Order {
     private String id;
     private String orderNumber;
-    ArrayList<OrderRow> orderRows;
+    private ArrayList<OrderRow> orderRows;
 
 }

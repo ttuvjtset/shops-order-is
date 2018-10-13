@@ -1,4 +1,4 @@
-package test;
+package util;
 
 import javax.servlet.ServletInputStream;
 import java.io.BufferedReader;
