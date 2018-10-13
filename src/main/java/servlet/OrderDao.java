@@ -28,7 +28,11 @@ class OrderDao {
                 String orderNumber = rs.getString("orderNumber");
                 String orderRows = rs.getString("orderRows");
 
-                orders.add(new Order(id, orderNumber, null));
+                Order order = new Order();
+                order.setId(id);
+                order.setOrderNumber(orderNumber);
+
+                orders.add(order);
             }
 
             return orders;
@@ -54,7 +58,10 @@ class OrderDao {
                 String orderRows = rs.getString("orderRows");
                 System.out.println(id + " " + orderNumber + " " + orderRows);
 
-                return new Order(id, orderNumber, null);
+                order = new Order();
+                order.setId(id);
+                order.setOrderNumber(orderNumber);
+                return order;
             }
 
             return null;

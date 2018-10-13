@@ -7,7 +7,7 @@ import java.util.ArrayList;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
+//@AllArgsConstructor
 @NoArgsConstructor
 public class Order {
     private String  id;
