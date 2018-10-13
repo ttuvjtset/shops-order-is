@@ -1,4 +1,4 @@
-package servlet;
+package test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
