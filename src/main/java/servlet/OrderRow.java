@@ -1,4 +1,4 @@
-package test;
+package servlet;
 
 import lombok.Getter;
 import lombok.Setter;
