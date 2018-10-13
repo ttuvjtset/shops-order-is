@@ -1,4 +1,4 @@
-package servlet;
+package order;
 
 import lombok.*;
 
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-class Order {
+public class Order {
     private String id;
     private String orderNumber;
     private ArrayList<OrderRow> orderRows;
