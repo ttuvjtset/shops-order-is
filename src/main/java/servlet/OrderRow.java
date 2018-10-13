@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class OrderRow {
+class OrderRow {
     String itemName;
     int quantity;
     int price;

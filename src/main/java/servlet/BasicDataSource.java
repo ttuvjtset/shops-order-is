@@ -6,11 +6,11 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class BasicDataSource {
+class BasicDataSource {
 
-    public Connection getConnection() throws SQLException {
-        DataSourceProvider.setDbUrl("jdbc:hsqldb:file:${user.home}/data/jdbc/db;shutdown=true");
-        DataSource dataSource = DataSourceProvider.getDataSource(); // max 3 connections
+    Connection getConnection() throws SQLException {
+        DataSourceProvider.setDbUrl("jdbc:hsqldb:mem:orders");
+        DataSource dataSource = DataSourceProvider.getDataSource();
         return dataSource.getConnection();
     }
 

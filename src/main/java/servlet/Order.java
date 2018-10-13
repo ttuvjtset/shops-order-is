@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Order {
+class Order {
     private String id;
     private String orderNumber;
     private ArrayList<OrderRow> orderRows;

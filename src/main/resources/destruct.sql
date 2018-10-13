@@ -1,1 +1,1 @@
-DROP SCHEMA public CASCADE;
+-- DROP SCHEMA public CASCADE;
