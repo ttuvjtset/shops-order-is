@@ -10,7 +10,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order {
-    private String id;
+    private String  id;
     private String orderNumber;
     private ArrayList<OrderRow> orderRows;
 
