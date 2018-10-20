@@ -2,7 +2,6 @@ package test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,11 +19,13 @@ public class Servlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
         if (request.getRequestURI().equals("/api/orders")) {
             if (request.getParameterMap().containsKey("id")) {
                 int parsedKey = Integer.parseInt(request.getParameter("id"));
                 Order orderById = orderDao.getOrderById(parsedKey);
+                orderById = orderDao.getOrderRows(orderById);
+
                 response.setHeader("Content-Type", "application/json");
                 response.getWriter().print(new ObjectMapper().writeValueAsString(orderById));
             }
@@ -37,16 +38,24 @@ public class Servlet extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
+        if (request.getRequestURI().equals("/api/orders")) {
+            if (request.getParameterMap().containsKey("id")) {
+                orderDao.deleteOrderById(request.getParameter("id"));
+            }
+        }
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
         if (request.getRequestURI().equals("/api/orders")) {
 
             ObjectMapper mapper = new ObjectMapper();
             Order order = mapper.readValue(request.getInputStream(), Order.class);
             order.setId(String.valueOf(orderDao.saveOrderByPost(order)));
-
+            orderDao.saveOrderRows(order);
             response.setHeader("Content-Type", "application/json");
             response.getWriter().print(new ObjectMapper().writeValueAsString(order));
         }

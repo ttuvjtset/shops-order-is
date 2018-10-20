@@ -8,3 +8,10 @@ CREATE TABLE orders (
   orderNumber VARCHAR(255),
   orderRows   VARCHAR(255)
 );
+
+CREATE TABLE orderrow (
+  orderId     BIGINT NOT NULL,
+  itemName    VARCHAR(255),
+  quantity    INT,
+  price       INT
+);

@@ -11,15 +11,15 @@ import java.sql.Statement;
 
 @WebListener()
 public class Listener implements ServletContextListener {
-    private BasicDataSource basicDataSource;
+    private DataSourceBasic dataSourceBasic;
 
     public Listener() {
-        basicDataSource = new BasicDataSource();
+        dataSourceBasic = new DataSourceBasic();
     }
 
     public void contextInitialized(ServletContextEvent sce) {
         System.out.println("contextInitialized");
-        try (Connection conn = basicDataSource.getConnection();
+        try (Connection conn = dataSourceBasic.getConnection();
              Statement stmt = conn.createStatement()) {
 
             stmt.executeUpdate(FileUtil.readFileFromClasspath("schema.sql"));

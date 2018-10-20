@@ -6,7 +6,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-class BasicDataSource {
+class DataSourceBasic {
 
     Connection getConnection() throws SQLException {
         DataSourceProvider.setDbUrl("jdbc:hsqldb:mem:orders");
