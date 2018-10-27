@@ -67,7 +67,6 @@ class OrderDao {
     }
 
     Report getReport() {
-
         String sql = "SELECT " +
                 "COUNT(a.total) AS arv, " +
                 "AVG(a.total) AS averageOrderAmount, " +
@@ -89,10 +88,6 @@ class OrderDao {
                 int turnoverVAT = rs.getInt("turnoverVAT");
                 int turnoverWithVAT = rs.getInt("turnoverWithVAT");
 
-
-                System.out.println(arv + " " + averageOrderAmount + " " + turnoverWithoutVAT + " "
-                        + turnoverVAT + " " + turnoverWithVAT);
-
                 report = new Report(arv, averageOrderAmount, turnoverWithoutVAT, turnoverVAT, turnoverWithVAT);
             }
 
@@ -104,12 +99,12 @@ class OrderDao {
     }
 
     void deleteOrderById(String id) {
-        String sqlOrders = "delete from orders where id=?";
-        String sqlOrderRow = "delete from orderrow where orderId=?";
+        String sqlOrders = "DELETE FROM orders WHERE id=?";
+        String sqlOrderRow = "DELETE FROM orderrow WHERE orderId=?";
 
-        List<String> sqls = Arrays.asList(sqlOrders, sqlOrderRow);
+        List<String> sqlStatements = Arrays.asList(sqlOrders, sqlOrderRow);
 
-        for (String sql : sqls) {
+        for (String sql : sqlStatements) {
             try (Connection conn = dataSourceBasic.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setLong(1, Long.valueOf(id));
@@ -122,12 +117,12 @@ class OrderDao {
     }
 
     void deleteAllOrders() {
-        String sqlOrders = "delete from orders";
-        String sqlOrderRow = "delete from orderrow";
+        String sqlOrders = "DELETE FROM orders";
+        String sqlOrderRow = "DELETE FROM orderrow";
 
-        List<String> sqls = Arrays.asList(sqlOrders, sqlOrderRow);
+        List<String> sqlStatements = Arrays.asList(sqlOrders, sqlOrderRow);
 
-        for (String sql : sqls) {
+        for (String sql : sqlStatements) {
             try (Connection conn = dataSourceBasic.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.executeUpdate();
@@ -140,7 +135,7 @@ class OrderDao {
 
     Order getOrderRows(Order order) {
         if (order != null) {
-            String sql = "select itemName, quantity, price from orderrow where orderId = ?";
+            String sql = "SELECT itemName, quantity, price FROM orderrow WHERE orderId=?";
 
             try (Connection conn = dataSourceBasic.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -172,8 +167,8 @@ class OrderDao {
     }
 
     long saveOrderByPost(Order order) {
-        String sql = "insert into orders (id, orderNumber, orderRows) " +
-                "values (next value for seq1, ?, null);";
+        String sql = "INSERT INTO orders (id, orderNumber, orderRows) " +
+                "VALUES (NEXT VALUE FOR seq1, ?, null);";
 
         try (Connection conn = dataSourceBasic.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"})) {
@@ -194,8 +189,8 @@ class OrderDao {
     void saveOrderRows(Order order) {
         if (order != null && order.getOrderRows() != null) {
             for (OrderRow orderRow : order.getOrderRows()) {
-                String sql = "insert into orderrow (orderId, itemName, quantity, price) " +
-                        "values (?, ?, ?, ?);";
+                String sql = "INSERT INTO orderrow (orderId, itemName, quantity, price) " +
+                        "VALUES (?, ?, ?, ?);";
 
                 try (Connection conn = dataSourceBasic.getConnection();
                      PreparedStatement ps = conn.prepareStatement(sql)) {
