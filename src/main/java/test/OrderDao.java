@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 class OrderDao {
     private DataSourceBasic dataSourceBasic;
@@ -18,7 +19,8 @@ class OrderDao {
     ArrayList<Order> getAllOrders() {
         ArrayList<Order> orders = new ArrayList<>();
 
-        String sql = "select id, orderNumber, orderRows from orders";
+        String sql = "SELECT id, orderNumber, itemName, quantity, price " +
+                "FROM orders LEFT JOIN orderrow ON orderrow.orderId = orders.id;";
 
         try (Connection conn = dataSourceBasic.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -28,13 +30,27 @@ class OrderDao {
             while (rs.next()) {
                 String id = rs.getString("id");
                 String orderNumber = rs.getString("orderNumber");
-                String orderRows = rs.getString("orderRows");
+                String itemName = rs.getString("itemName");
+                int quantity = rs.getInt("quantity");
+                int price = rs.getInt("price");
 
-                Order order = new Order();
-                order.setId(id);
-                order.setOrderNumber(orderNumber);
+                Optional<Order> orderInList = orders.stream().filter(s -> s.getId().equals(id)).findFirst();
 
-                orders.add(order);
+                OrderRow orderRow = null;
+
+                if (!(itemName == null && quantity == 0 && price == 0)) {
+                    orderRow = new OrderRow(itemName, quantity, price);
+                }
+
+                if (!orderInList.isPresent()) {
+                    ArrayList<OrderRow> orderRowList = new ArrayList<>();
+                    if (orderRow != null) orderRowList.add(orderRow);
+                    Order order = new Order(id, orderNumber, orderRowList);
+                    orders.add(order);
+                } else {
+                    Order order = orderInList.get();
+                    if (orderRow != null) order.getOrderRows().add(orderRow);
+                }
             }
 
             return orders;
@@ -45,32 +61,9 @@ class OrderDao {
     }
 
     Order getOrderById(int parsedKey) {
-        Order order = null;
-
-        String sql = "select id, orderNumber, orderRows from orders where id = ?";
-
-        try (Connection conn = dataSourceBasic.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, parsedKey);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                String id = rs.getString("id");
-                String orderNumber = rs.getString("orderNumber");
-                String orderRows = rs.getString("orderRows");
-                System.out.println(id + " " + orderNumber + " " + orderRows);
-
-                order = new Order();
-                order.setId(id);
-                order.setOrderNumber(orderNumber);
-                return order;
-            }
-
-            return null;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        Optional<Order> orderOptional = getAllOrders().stream()
+                .filter(s -> s.getId().equals(String.valueOf(parsedKey))).findFirst();
+        return orderOptional.orElse(null);
     }
 
     Report getReport() {
