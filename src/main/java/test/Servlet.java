@@ -8,8 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-@WebServlet(value = {"/api/orders", "/orders/form"})
+@WebServlet(value = {"/api/orders", "/orders/form", "/api/orders/report"})
 public class Servlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private OrderDao orderDao;
@@ -20,6 +22,13 @@ public class Servlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
+
+        if (request.getRequestURI().equals("/api/orders/report")) {
+            Report report = orderDao.getReport();
+            response.setHeader("Content-Type", "application/json");
+            response.getWriter().print(new ObjectMapper().writeValueAsString(report));
+        }
+
         if (request.getRequestURI().equals("/api/orders")) {
             if (request.getParameterMap().containsKey("id")) {
                 int parsedKey = Integer.parseInt(request.getParameter("id"));
@@ -36,6 +45,8 @@ public class Servlet extends HttpServlet {
                 response.getWriter().print(new ObjectMapper().writeValueAsString(allOrders));
             }
         }
+
+
     }
 
     @Override
@@ -43,6 +54,8 @@ public class Servlet extends HttpServlet {
         if (request.getRequestURI().equals("/api/orders")) {
             if (request.getParameterMap().containsKey("id")) {
                 orderDao.deleteOrderById(request.getParameter("id"));
+            } else {
+                orderDao.deleteAllOrders();
             }
         }
     }
@@ -51,23 +64,39 @@ public class Servlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         if (request.getRequestURI().equals("/api/orders")) {
-
             ObjectMapper mapper = new ObjectMapper();
             Order order = mapper.readValue(request.getInputStream(), Order.class);
-            order.setId(String.valueOf(orderDao.saveOrderByPost(order)));
-            orderDao.saveOrderRows(order);
-            response.setHeader("Content-Type", "application/json");
-            response.getWriter().print(new ObjectMapper().writeValueAsString(order));
+
+            if (order.getOrderNumber().length() < 2) {
+                generateValidationErrorTooShortNumber(response);
+            } else {
+                order.setId(String.valueOf(orderDao.saveOrderByPost(order)));
+                orderDao.saveOrderRows(order);
+                response.setHeader("Content-Type", "application/json");
+                response.getWriter().print(new ObjectMapper().writeValueAsString(order));
+            }
         }
 
         if (request.getRequestURI().equals("/orders/form")) {
+            if (request.getParameter("orderNumber") != null && request.getParameter("orderNumber").length() < 2) {
+                generateValidationErrorTooShortNumber(response);
+            } else {
+                Order order = new Order();
+                order.setOrderNumber(request.getParameter("orderNumber"));
+                order.setId(String.valueOf(orderDao.saveOrderByPost(order)));
 
-            Order order = new Order();
-            order.setOrderNumber(request.getParameter("orderNumber"));
-            order.setId(String.valueOf(orderDao.saveOrderByPost(order)));
-
-            response.setHeader("Content-Type", "application/json");
-            response.getWriter().print(order.getId());
+                response.setHeader("Content-Type", "application/json");
+                response.getWriter().print(order.getId());
+            }
         }
+    }
+
+    private void generateValidationErrorTooShortNumber(HttpServletResponse response) throws IOException {
+        ValidationError validationError = new ValidationError("too_short_number");
+        List<ValidationError> validationErrorList = Collections.singletonList(validationError);
+        ValidationErrors validationErrors = new ValidationErrors(validationErrorList);
+        response.setHeader("Content-Type", "application/json");
+        response.setStatus(400);
+        response.getWriter().print(new ObjectMapper().writeValueAsString(validationErrors));
     }
 }

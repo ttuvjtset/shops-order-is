@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 class OrderDao {
     private DataSourceBasic dataSourceBasic;
@@ -71,16 +73,75 @@ class OrderDao {
         }
     }
 
-    void deleteOrderById(String id) {
-        String sql = "delete from orders where id=?";
+    Report getReport() {
+
+        String sql = "SELECT " +
+                "COUNT(a.total) AS arv, " +
+                "AVG(a.total) AS averageOrderAmount, " +
+                "SUM(a.total) AS turnoverWithoutVAT, " +
+                "SUM(a.total)*.2 AS turnoverVAT, " +
+                "SUM(a.total)*1.2 AS turnoverWithVAT\n" +
+                "FROM (SELECT orderId, SUM(quantity*price) AS total FROM orderrow GROUP BY orderId) AS a;";
+
+        Report report = null;
 
         try (Connection conn = dataSourceBasic.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, Long.valueOf(id));
-            ps.executeUpdate();
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int arv = rs.getInt("arv");
+                int averageOrderAmount = rs.getInt("averageOrderAmount");
+                int turnoverWithoutVAT = rs.getInt("turnoverWithoutVAT");
+                int turnoverVAT = rs.getInt("turnoverVAT");
+                int turnoverWithVAT = rs.getInt("turnoverWithVAT");
+
+
+                System.out.println(arv + " " + averageOrderAmount + " " + turnoverWithoutVAT + " "
+                        + turnoverVAT + " " + turnoverWithVAT);
+
+                report = new Report(arv, averageOrderAmount, turnoverWithoutVAT, turnoverVAT, turnoverWithVAT);
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+
+        return report;
+    }
+
+    void deleteOrderById(String id) {
+        String sqlOrders = "delete from orders where id=?";
+        String sqlOrderRow = "delete from orderrow where orderId=?";
+
+        List<String> sqls = Arrays.asList(sqlOrders, sqlOrderRow);
+
+        for (String sql : sqls) {
+            try (Connection conn = dataSourceBasic.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setLong(1, Long.valueOf(id));
+                ps.executeUpdate();
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    void deleteAllOrders() {
+        String sqlOrders = "delete from orders";
+        String sqlOrderRow = "delete from orderrow";
+
+        List<String> sqls = Arrays.asList(sqlOrders, sqlOrderRow);
+
+        for (String sql : sqls) {
+            try (Connection conn = dataSourceBasic.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.executeUpdate();
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
