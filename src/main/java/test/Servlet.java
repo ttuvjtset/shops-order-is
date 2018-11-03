@@ -1,7 +1,7 @@
 package test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dao.OrderDao;
+import dao.OrderHsqlDao;
 import model.Order;
 import model.Report;
 import validation.ValidationError;
@@ -19,17 +19,17 @@ import java.util.List;
 @WebServlet(value = {"/api/orders", "/orders/form", "/api/orders/report"})
 public class Servlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private OrderDao orderDao;
+    private OrderHsqlDao orderHsqlDao;
 
     public Servlet() {
-        orderDao = new OrderDao();
+        orderHsqlDao = new OrderHsqlDao();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
         if (request.getRequestURI().equals("/api/orders/report")) {
-            Report report = orderDao.getReport();
+            Report report = orderHsqlDao.getReport();
             response.setHeader("Content-Type", "application/json");
             response.getWriter().print(new ObjectMapper().writeValueAsString(report));
         }
@@ -37,14 +37,14 @@ public class Servlet extends HttpServlet {
         if (request.getRequestURI().equals("/api/orders")) {
             if (request.getParameterMap().containsKey("id")) {
                 int parsedKey = Integer.parseInt(request.getParameter("id"));
-                Order orderById = orderDao.getOrderById(parsedKey);
+                Order orderById = orderHsqlDao.getOrderById(parsedKey);
 
                 response.setHeader("Content-Type", "application/json");
                 response.getWriter().print(new ObjectMapper().writeValueAsString(orderById));
             }
 
             if (request.getParameterMap().isEmpty()) {
-                ArrayList<Order> allOrders = orderDao.getAllOrders();
+                ArrayList<Order> allOrders = orderHsqlDao.getAllOrders();
                 response.setHeader("Content-Type", "application/json");
                 response.getWriter().print(new ObjectMapper().writeValueAsString(allOrders));
             }
@@ -57,9 +57,9 @@ public class Servlet extends HttpServlet {
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
         if (request.getRequestURI().equals("/api/orders")) {
             if (request.getParameterMap().containsKey("id")) {
-                orderDao.deleteOrderById(request.getParameter("id"));
+                orderHsqlDao.deleteOrderById(request.getParameter("id"));
             } else {
-                orderDao.deleteAllOrders();
+                orderHsqlDao.deleteAllOrders();
             }
         }
     }
@@ -74,8 +74,8 @@ public class Servlet extends HttpServlet {
             if (order.getOrderNumber().length() < 2) {
                 generateValidationErrorTooShortNumber(response);
             } else {
-                order.setId(String.valueOf(orderDao.saveOrderByPost(order)));
-                orderDao.saveOrderRows(order);
+                order.setId(String.valueOf(orderHsqlDao.saveOrderByPost(order)));
+                orderHsqlDao.saveOrderRows(order);
                 response.setHeader("Content-Type", "application/json");
                 response.getWriter().print(new ObjectMapper().writeValueAsString(order));
             }
@@ -87,7 +87,7 @@ public class Servlet extends HttpServlet {
             } else {
                 Order order = new Order();
                 order.setOrderNumber(request.getParameter("orderNumber"));
-                order.setId(String.valueOf(orderDao.saveOrderByPost(order)));
+                order.setId(String.valueOf(orderHsqlDao.saveOrderByPost(order)));
 
                 response.setHeader("Content-Type", "application/json");
                 response.getWriter().print(order.getId());

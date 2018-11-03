@@ -27,8 +27,8 @@ public class DbConfig {
 
         new JdbcTemplate(ds)
                 .update(FileUtil.readFileFromClasspath("schema.sql"));
-        new JdbcTemplate(ds)
-                .update(FileUtil.readFileFromClasspath("data.sql"));
+//        new JdbcTemplate(ds)
+//                .update(FileUtil.readFileFromClasspath("data.sql"));
 
         return ds;
     }

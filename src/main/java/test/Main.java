@@ -1,6 +1,6 @@
 package test;
 
-import dao.OrderDao;
+import dao.OrderHsqlDao;
 import model.Order;
 import model.OrderRow;
 
@@ -15,7 +15,7 @@ public class Main {
         orderRows.add(orderRow60);
 
         Order order = new Order(null, "A15", orderRows);
-        OrderDao orderDao = new OrderDao();
-        orderDao.saveOrderByPost(order);
+        OrderHsqlDao orderHsqlDao = new OrderHsqlDao();
+        orderHsqlDao.saveOrderByPost(order);
     }
 }
