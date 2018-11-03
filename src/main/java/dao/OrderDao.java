@@ -1,8 +1,9 @@
-package test;
+package dao;
 
 import model.Order;
 import model.OrderRow;
 import model.Report;
+import test.DataSourceBasic;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,14 +14,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-class OrderDao {
+public class OrderDao {
     private DataSourceBasic dataSourceBasic;
 
-    OrderDao() {
+    public OrderDao() {
         dataSourceBasic = new DataSourceBasic();
     }
 
-    ArrayList<Order> getAllOrders() {
+    public ArrayList<Order> getAllOrders() {
         ArrayList<Order> orders = new ArrayList<>();
 
         String sql = "SELECT id, orderNumber, itemName, quantity, price " +
@@ -64,13 +65,13 @@ class OrderDao {
         }
     }
 
-    Order getOrderById(int parsedKey) {
+    public Order getOrderById(int parsedKey) {
         Optional<Order> orderOptional = getAllOrders().stream()
                 .filter(s -> s.getId().equals(String.valueOf(parsedKey))).findFirst();
         return orderOptional.orElse(null);
     }
 
-    Report getReport() {
+    public Report getReport() {
         String sql = "SELECT " +
                 "COUNT(a.total) AS arv, " +
                 "AVG(a.total) AS averageOrderAmount, " +
@@ -102,7 +103,7 @@ class OrderDao {
         return report;
     }
 
-    void deleteOrderById(String id) {
+    public void deleteOrderById(String id) {
         String sqlOrders = "DELETE FROM orders WHERE id=?";
         String sqlOrderRow = "DELETE FROM orderrow WHERE orderId=?";
 
@@ -120,7 +121,7 @@ class OrderDao {
         }
     }
 
-    void deleteAllOrders() {
+    public void deleteAllOrders() {
         String sqlOrders = "DELETE FROM orders";
         String sqlOrderRow = "DELETE FROM orderrow";
 
@@ -137,7 +138,7 @@ class OrderDao {
         }
     }
 
-    Order getOrderRows(Order order) {
+    public Order getOrderRows(Order order) {
         if (order != null) {
             String sql = "SELECT itemName, quantity, price FROM orderrow WHERE orderId=?";
 
@@ -170,7 +171,7 @@ class OrderDao {
         return null;
     }
 
-    long saveOrderByPost(Order order) {
+    public long saveOrderByPost(Order order) {
         String sql = "INSERT INTO orders (id, orderNumber, orderRows) " +
                 "VALUES (NEXT VALUE FOR seq1, ?, null);";
 
@@ -190,7 +191,7 @@ class OrderDao {
         }
     }
 
-    void saveOrderRows(Order order) {
+    public void saveOrderRows(Order order) {
         if (order != null && order.getOrderRows() != null) {
             for (OrderRow orderRow : order.getOrderRows()) {
                 String sql = "INSERT INTO orderrow (orderId, itemName, quantity, price) " +

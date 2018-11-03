@@ -10,7 +10,13 @@ repositories {
 
 sourceCompatibility = 8
 
+def springVersion = '5.1.0.RELEASE'
+
 dependencies {
+    compile group: 'org.springframework', name: 'spring-webmvc', version: springVersion
+    compile group: 'org.springframework', name: 'spring-jdbc', version: springVersion
+    compile group: 'org.hibernate', name: 'hibernate-validator', version: '6.0.2.Final'
+
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
     compileOnly 'org.projectlombok:lombok:1.18.2'
     annotationProcessor 'org.projectlombok:lombok:1.18.2'

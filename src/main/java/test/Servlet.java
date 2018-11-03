@@ -1,6 +1,7 @@
 package test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dao.OrderDao;
 import model.Order;
 import model.Report;
 import validation.ValidationError;
@@ -37,7 +38,7 @@ public class Servlet extends HttpServlet {
             if (request.getParameterMap().containsKey("id")) {
                 int parsedKey = Integer.parseInt(request.getParameter("id"));
                 Order orderById = orderDao.getOrderById(parsedKey);
-                orderById = orderDao.getOrderRows(orderById);
+              //  orderById = orderDao.getOrderRows(orderById);
 
                 response.setHeader("Content-Type", "application/json");
                 response.getWriter().print(new ObjectMapper().writeValueAsString(orderById));

@@ -1,5 +1,6 @@
 package test;
 
+import dao.OrderDao;
 import model.Order;
 import model.OrderRow;
 
