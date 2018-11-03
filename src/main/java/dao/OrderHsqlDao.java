@@ -1,79 +1,63 @@
 package dao;
 
 import model.Order;
+import model.OrderAndRowCombined;
 import model.OrderRow;
 import model.Report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import test.DataSourceBasic;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Primary
 @Repository
-public class OrderHsqlDao implements OrderDao{
+public class OrderHsqlDao implements OrderDao {
+
     @Autowired
     private JdbcTemplate template;
 
-
-    private DataSourceBasic dataSourceBasic;
-
-    public OrderHsqlDao() {
-        dataSourceBasic = new DataSourceBasic();
-    }
-
     @Override
-    public ArrayList<Order> getAllOrders() {
-        ArrayList<Order> orders = new ArrayList<>();
-
+    public List<Order> getAllOrders() {
         String sql = "SELECT id, orderNumber, itemName, quantity, price " +
                 "FROM orders LEFT JOIN orderrow ON orderrow.orderId = orders.id;";
 
-        try (Connection conn = dataSourceBasic.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        List<OrderAndRowCombined> orderAndRowCombined = template.query(sql, (rs, rowNum) -> new OrderAndRowCombined(
+                rs.getString("id"),
+                rs.getString("orderNumber"),
+                rs.getString("itemName"),
+                rs.getInt("quantity"),
+                rs.getInt("price")
+        ));
 
-            ResultSet rs = ps.executeQuery();
+        List<Order> orders = new ArrayList<>();
 
-            while (rs.next()) {
-                String id = rs.getString("id");
-                String orderNumber = rs.getString("orderNumber");
-                String itemName = rs.getString("itemName");
-                int quantity = rs.getInt("quantity");
-                int price = rs.getInt("price");
+        for (OrderAndRowCombined combined : orderAndRowCombined) {
+            Optional<Order> orderInList = orders.stream().filter(s -> s.getId().equals(combined.getId())).findFirst();
 
-                Optional<Order> orderInList = orders.stream().filter(s -> s.getId().equals(id)).findFirst();
+            OrderRow orderRow = null;
 
-                OrderRow orderRow = null;
-
-                if (!(itemName == null && quantity == 0 && price == 0)) {
-                    orderRow = new OrderRow(itemName, quantity, price);
-                }
-
-                if (!orderInList.isPresent()) {
-                    ArrayList<OrderRow> orderRowList = new ArrayList<>();
-                    if (orderRow != null) orderRowList.add(orderRow);
-                    Order order = new Order(id, orderNumber, orderRowList);
-                    orders.add(order);
-                } else {
-                    Order order = orderInList.get();
-                    if (orderRow != null) order.getOrderRows().add(orderRow);
-                }
+            if (!(combined.getItemName() == null && combined.getQuantity() == 0 && combined.getPrice() == 0)) {
+                orderRow = new OrderRow(combined.getItemName(), combined.getQuantity(), combined.getPrice());
             }
 
-            return orders;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            if (!orderInList.isPresent()) {
+                ArrayList<OrderRow> orderRowList = new ArrayList<>();
+                if (orderRow != null) orderRowList.add(orderRow);
+                Order order = new Order(combined.getId(), combined.getOrderNumber(), orderRowList);
+                orders.add(order);
+            } else {
+                Order order = orderInList.get();
+                if (orderRow != null) order.getOrderRows().add(orderRow);
+            }
         }
+
+        return orders;
     }
 
     @Override
@@ -93,27 +77,15 @@ public class OrderHsqlDao implements OrderDao{
                 "SUM(a.total)*1.2 AS turnoverWithVAT\n" +
                 "FROM (SELECT orderId, SUM(quantity*price) AS total FROM orderrow GROUP BY orderId) AS a;";
 
-        Report report = null;
+        List<Report> reports = template.query(sql, (rs, rowNum) -> new Report(
+                rs.getInt("arv"),
+                rs.getInt("averageOrderAmount"),
+                rs.getInt("turnoverWithoutVAT"),
+                rs.getInt("turnoverVAT"),
+                rs.getInt("turnoverWithVAT")
+        ));
 
-        try (Connection conn = dataSourceBasic.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                int arv = rs.getInt("arv");
-                int averageOrderAmount = rs.getInt("averageOrderAmount");
-                int turnoverWithoutVAT = rs.getInt("turnoverWithoutVAT");
-                int turnoverVAT = rs.getInt("turnoverVAT");
-                int turnoverWithVAT = rs.getInt("turnoverWithVAT");
-
-                report = new Report(arv, averageOrderAmount, turnoverWithoutVAT, turnoverVAT, turnoverWithVAT);
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return report;
+        return reports.get(0);
     }
 
     @Override
@@ -121,18 +93,8 @@ public class OrderHsqlDao implements OrderDao{
         String sqlOrders = "DELETE FROM orders WHERE id=?";
         String sqlOrderRow = "DELETE FROM orderrow WHERE orderId=?";
 
-        List<String> sqlStatements = Arrays.asList(sqlOrders, sqlOrderRow);
-
-        for (String sql : sqlStatements) {
-            try (Connection conn = dataSourceBasic.getConnection();
-                 PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setLong(1, Long.valueOf(id));
-                ps.executeUpdate();
-
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        template.update(sqlOrders, id);
+        template.update(sqlOrderRow, id);
     }
 
     @Override
@@ -140,97 +102,40 @@ public class OrderHsqlDao implements OrderDao{
         String sqlOrders = "DELETE FROM orders";
         String sqlOrderRow = "DELETE FROM orderrow";
 
-        List<String> sqlStatements = Arrays.asList(sqlOrders, sqlOrderRow);
-
-        for (String sql : sqlStatements) {
-            try (Connection conn = dataSourceBasic.getConnection();
-                 PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.executeUpdate();
-
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        template.update(sqlOrders);
+        template.update(sqlOrderRow);
     }
 
     @Override
-    public Order getOrderRows(Order order) {
-        if (order != null) {
-            String sql = "SELECT itemName, quantity, price FROM orderrow WHERE orderId=?";
-
-            try (Connection conn = dataSourceBasic.getConnection();
-                 PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setLong(1, Long.valueOf(order.getId()));
-                ResultSet rs = ps.executeQuery();
-
-                ArrayList<OrderRow> orderRows = new ArrayList<>();
-
-                while (rs.next()) {
-                    String itemName = rs.getString("itemName");
-                    int quantity = rs.getInt("quantity");
-                    int price = rs.getInt("price");
-
-                    System.out.println(itemName + " " + quantity + " " + price);
-
-                    OrderRow orderRow = new OrderRow(itemName, quantity, price);
-                    orderRows.add(orderRow);
-                }
-
-                order.setOrderRows(orderRows);
-
-                return order;
-
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public long saveOrderByPost(Order order) {
+    public Order saveOrderByPost(Order order) {
         String sql = "INSERT INTO orders (id, orderNumber, orderRows) " +
                 "VALUES (NEXT VALUE FOR seq1, ?, null);";
 
-        try (Connection conn = dataSourceBasic.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"id"})) {
+        GeneratedKeyHolder holder = new GeneratedKeyHolder();
 
-            ps.setString(1, order.getOrderNumber());
-            ps.executeUpdate();
+        template.update(conn -> {
+            PreparedStatement preparedStatement = conn.prepareStatement(sql, new String[]{"id"});
+            preparedStatement.setString(1, order.getOrderNumber());
+            return preparedStatement;
+        }, holder);
 
-            ResultSet rs = ps.getGeneratedKeys();
-            rs.next();
+        order.setId(String.valueOf(holder.getKey().longValue()));
 
-            return rs.getLong("id");
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void saveOrderRows(Order order) {
         if (order != null && order.getOrderRows() != null) {
             for (OrderRow orderRow : order.getOrderRows()) {
-                String sql = "INSERT INTO orderrow (orderId, itemName, quantity, price) " +
+                String sql2 = "INSERT INTO orderrow (orderId, itemName, quantity, price) " +
                         "VALUES (?, ?, ?, ?);";
-
-                try (Connection conn = dataSourceBasic.getConnection();
-                     PreparedStatement ps = conn.prepareStatement(sql)) {
-
+                template.update(conn -> {
+                    PreparedStatement ps = conn.prepareStatement(sql2);
                     ps.setString(1, order.getId());
                     ps.setString(2, orderRow.getItemName());
                     ps.setInt(3, orderRow.getQuantity());
                     ps.setInt(4, orderRow.getPrice());
-
-                    ps.executeUpdate();
-
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
+                    return ps;
+                });
             }
-
         }
 
+        return order;
     }
 }

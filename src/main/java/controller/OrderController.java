@@ -1,39 +1,22 @@
 package controller;
 
-import dao.OrderHsqlDao;
+import dao.OrderDao;
 import model.Order;
 import model.Report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class OrderController {
 
     @Autowired
-    private OrderHsqlDao dao;
-
-//    @GetMapping("posts")
-//    public List<Post> getPosts() {
-//        return dao.findAll();
-//    }
-//
-//    @PostMapping("posts")
-//    public void save(@RequestBody @Valid Post post) {
-//        dao.save(post);
-//    }
-//
-//    @DeleteMapping("posts/{postId}")
-//    public void deletePost(@PathVariable("postId") Long postId) {
-//        dao.delete(postId);
-//    }
-
-
+    private OrderDao dao;
 
     @GetMapping("orders")
-    public ArrayList<Order> getAllOrders() {
+    public List<Order> getAllOrders() {
         return dao.getAllOrders();
     }
 
@@ -58,13 +41,8 @@ public class OrderController {
     }
 
     @PostMapping("orders")
-    public void saveOrderByPost(@RequestBody @Valid Order order) {
-        dao.saveOrderByPost(order); //!!!! long???
-    }
-
-    @PostMapping("orders")
-    public void saveOrderRows(Order order) {
-
+    public Order saveOrderByPost(@RequestBody @Valid Order order) {
+        return dao.saveOrderByPost(order);
     }
 
 }

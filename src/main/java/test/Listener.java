@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+/*
 
 @WebListener()
 public class Listener implements ServletContextListener {
@@ -33,3 +34,4 @@ public class Listener implements ServletContextListener {
 
     }
 }
+*/

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+/*
 
 @WebServlet(value = {"/api/orders", "/orders/form", "/api/orders/report"})
 public class Servlet extends HttpServlet {
@@ -104,3 +105,4 @@ public class Servlet extends HttpServlet {
         response.getWriter().print(new ObjectMapper().writeValueAsString(validationErrors));
     }
 }
+*/

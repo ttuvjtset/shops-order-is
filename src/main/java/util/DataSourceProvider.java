@@ -3,7 +3,7 @@ package util;
 import org.apache.commons.dbcp.BasicDataSource;
 
 import javax.sql.DataSource;
-
+/*
 public class DataSourceProvider {
 
     private static String dbUrl = null;
@@ -32,4 +32,4 @@ public class DataSourceProvider {
         return dataSource;
     }
 
-}
+}*/

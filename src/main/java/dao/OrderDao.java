@@ -3,23 +3,20 @@ package dao;
 import model.Order;
 import model.Report;
 
-import java.util.ArrayList;
+import java.util.List;
 
 
 public interface OrderDao {
-    ArrayList<Order> getAllOrders();
+    List<Order> getAllOrders();
 
     Order getOrderById(int parsedKey);
-
+//
     Report getReport();
-
+//
     void deleteOrderById(String id);
 
     void deleteAllOrders();
 
-    Order getOrderRows(Order order);
+    Order saveOrderByPost(Order order);
 
-    long saveOrderByPost(Order order);
-
-    void saveOrderRows(Order order);
 }
