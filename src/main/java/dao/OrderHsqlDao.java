@@ -35,6 +35,12 @@ public class OrderHsqlDao implements OrderDao {
                 rs.getInt("price")
         ));
 
+        template.query(sql, (rs, rowNum) -> new OrderRow(
+                rs.getString("itemName"),
+                rs.getInt("quantity"),
+                rs.getInt("price")
+        ));
+
         List<Order> orders = new ArrayList<>();
 
         for (OrderAndRowCombined combined : orderAndRowCombined) {

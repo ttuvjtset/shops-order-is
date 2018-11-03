@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class OrderController {
@@ -25,7 +26,7 @@ public class OrderController {
         return dao.getOrderById(Integer.valueOf(orderId));
     }
 
-    @GetMapping("/orders/report")
+    @GetMapping("orders/report")
     public Report getReport() {
         return dao.getReport();
     }
@@ -45,4 +46,10 @@ public class OrderController {
         return dao.saveOrderByPost(order);
     }
 
+//    @PostMapping("orders/form")
+//    public Order saveOrderByForm(@RequestParam Map<String, String> body) {
+//        Order order = new Order();
+//        order.setOrderNumber(body.get("orderNumber"));
+//        return dao.saveOrderByPost(order);
+//    }
 }

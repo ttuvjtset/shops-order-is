@@ -15,10 +15,10 @@ public class OrderRow {
     String itemName;
 
     @NotNull
-    @Min(0)
+    @Min(1)
     int quantity;
 
     @NotNull
-    @Min(0)
+    @Min(1)
     int price;
 }

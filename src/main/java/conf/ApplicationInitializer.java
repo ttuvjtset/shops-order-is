@@ -7,16 +7,16 @@ public class ApplicationInitializer extends
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[] {};
+        return new Class[]{};
     }
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[] { MvcConfig.class };
+        return new Class[]{MvcConfig.class};
     }
 
     @Override
     protected String[] getServletMappings() {
-        return new String[] { "/api/*" };
+        return new String[]{"/api/*"};
     }
 }

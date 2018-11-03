@@ -3,6 +3,8 @@ package model;
 
 import lombok.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 
 @Getter
@@ -11,8 +13,12 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order {
-    private String id;
-    private String orderNumber;
-    private ArrayList<OrderRow> orderRows;
+    String id;
+
+    @Size(min = 2)
+    String orderNumber;
+
+    @Valid
+    ArrayList<OrderRow> orderRows;
 
 }
