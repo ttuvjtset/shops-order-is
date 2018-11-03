@@ -1,6 +1,10 @@
 package test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import model.Order;
+import model.Report;
+import validation.ValidationError;
+import validation.ValidationErrors;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

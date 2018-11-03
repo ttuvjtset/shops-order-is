@@ -1,5 +1,9 @@
 package test;
 
+import model.Order;
+import model.OrderRow;
+import model.Report;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
