@@ -47,9 +47,12 @@ public class OrderController {
     }
 
 //    @PostMapping("orders/form")
-//    public Order saveOrderByForm(@RequestParam Map<String, String> body) {
+//    public Order saveOrderByForm(@RequestParam String orderNumber) {
 //        Order order = new Order();
-//        order.setOrderNumber(body.get("orderNumber"));
+//        order.setOrderNumber(orderNumber);
+
+       // validaator
+
 //        return dao.saveOrderByPost(order);
 //    }
 }
