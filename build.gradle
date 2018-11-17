@@ -26,9 +26,6 @@ dependencies {
     compile group: 'org.springframework',
             name: 'spring-orm',
             version: springVersion
-    compile group: 'javax.xml.bind',
-            name: 'jaxb-api',
-            version: '2.4.0-b180830.0359'
 
 
 
@@ -43,10 +40,7 @@ dependencies {
     compile group: 'org.hibernate',
             name: 'hibernate-core',
             version: '5.3.7.Final'
-
-    compile group: 'javax.xml.bind',
-            name: 'jaxb-api',
-            version: '2.4.0-b180830.0359'
+    
 
     compile group: 'org.hsqldb',
             name: 'hsqldb',

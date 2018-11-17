@@ -1,6 +1,7 @@
 package controller;
 
 import dao.OrderDao;
+import dao.OrderJPADao;
 import model.Orders;
 import model.Report;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import java.util.List;
 public class OrderController {
 
     @Autowired
-    private OrderDao dao;
+    private OrderJPADao dao;
 
     @GetMapping("orders")
     public List<Orders> getAllOrders() {
@@ -22,7 +23,7 @@ public class OrderController {
 
     @GetMapping("orders/{orderId}")
     public Orders getOrderById(@PathVariable String orderId) {
-        return dao.getOrderById(Integer.valueOf(orderId));
+        return dao.getOrderById(Long.valueOf(orderId));
     }
 
     @GetMapping("orders/report")
@@ -32,7 +33,7 @@ public class OrderController {
 
     @DeleteMapping("orders/{orderId}")
     public void deleteOrderById(@PathVariable String orderId) {
-        dao.deleteOrderById(orderId);
+        dao.deleteOrderById(Long.valueOf(orderId));
     }
 
     @DeleteMapping("orders")

@@ -16,14 +16,15 @@ public class Tester {
 
         OrderJPADao dao = ctx.getBean(OrderJPADao.class);
 
-       // Orders orders = new Orders("A52");
+        dao.saveOrderByPost(new Orders("A52"));
         Orders dd = new Orders("dd");
         dd.getOrderRows().add(new OrderRow("gg",2,100));
         dd.getOrderRows().add(new OrderRow("zz",2,100));
         dao.saveOrderByPost(dd);
-        System.out.println(dao.findAll());
-        dao.deleteOrderById(1L);
-        System.out.println(dao.findAll());
+        System.out.println(dao.getAllOrders());
+        //dao.deleteOrderById(1L);
+        System.out.println(dao.getOrderById(2));
+        System.out.println(dao.getAllOrders());
 
 
 
@@ -39,7 +40,7 @@ public class Tester {
 //        jill.getPhones().add(new Phone("222"));
 //        dao.save(jill);
 //
-//        System.out.println(dao.findAll());
+//        System.out.println(dao.getAllOrders());
 //
 //        Person person = dao.findPersonByName("jill");
 //
@@ -49,7 +50,7 @@ public class Tester {
 //
 //        dao.save(person);
 //
-//        System.out.println(dao.findAll());
+//        System.out.println(dao.getAllOrders());
 
 
         ctx.close();

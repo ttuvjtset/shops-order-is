@@ -9,11 +9,11 @@ import java.util.List;
 public interface OrderDao {
     List<Orders> getAllOrders();
 
-    Orders getOrderById(int parsedKey);
+    Orders getOrderById(long parsedKey);
 
     Report getReport();
 
-    void deleteOrderById(String id);
+    void deleteOrderById(long id);
 
     void deleteAllOrders();
 

@@ -1,6 +1,9 @@
 package dao;
 
 import model.Orders;
+import model.Report;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -11,7 +14,10 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
-public class OrderJPADao {
+public class OrderJPADao{
+    @Autowired
+    private JdbcTemplate template;
+
 
     @PersistenceContext
     private EntityManager em;
@@ -19,12 +25,17 @@ public class OrderJPADao {
     @Transactional
     public Orders saveOrderByPost(Orders orders) {
         em.persist(orders);
-
         return orders;
     }
 
-    public List<Orders> findAll() {
+    public List<Orders> getAllOrders() {
         return em.createQuery("select p from Orders p", Orders.class).getResultList();
+    }
+
+    public Orders getOrderById(long id) {
+        TypedQuery<Orders> query = em.createQuery("select o from Orders AS o WHERE o.id=:id", Orders.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
     @Transactional
@@ -32,73 +43,14 @@ public class OrderJPADao {
         Query query = em.createQuery("DELETE FROM Orders AS o where o.id=:id");
         query.setParameter("id", id);
         query.executeUpdate();
-
-//        Query query = Orders.entityManager().createQuery(
-//                "DELETE FROM Seller AS o WHERE o.company=:company AND o.id=:id");
-//        query.setParameter("company", company);
-//        query.setParameter("id", id);
-//        int result = query.executeUpdate();
     }
 
-
+    @Transactional
     public void deleteAllOrders() {
         em.createQuery("DELETE FROM Orders").executeUpdate();
     }
 
-/*
 
-    @Override
-    public List<Orders> getAllOrders() {
-        String sql = "SELECT id, orderNumber, itemName, quantity, price " +
-                "FROM orders LEFT JOIN orderrow ON orderrow.orderId = orders.id;";
-
-        List<OrderAndRowCombined> orderAndRowCombined = template.query(sql, (rs, rowNum) -> new OrderAndRowCombined(
-                rs.getString("id"),
-                rs.getString("orderNumber"),
-                rs.getString("itemName"),
-                rs.getInt("quantity"),
-                rs.getInt("price")
-        ));
-
-        template.query(sql, (rs, rowNum) -> new OrderRow(
-                rs.getString("itemName"),
-                rs.getInt("quantity"),
-                rs.getInt("price")
-        ));
-
-        List<Orders> orders = new ArrayList<>();
-
-        for (OrderAndRowCombined combined : orderAndRowCombined) {
-            Optional<Orders> orderInList = orders.stream().filter(s -> s.getId().equals(combined.getId())).findFirst();
-
-            OrderRow orderRow = null;
-
-            if (!(combined.getItemName() == null && combined.getQuantity() == 0 && combined.getPrice() == 0)) {
-                orderRow = new OrderRow(combined.getItemName(), combined.getQuantity(), combined.getPrice());
-            }
-
-            if (!orderInList.isPresent()) {
-                ArrayList<OrderRow> orderRowList = new ArrayList<>();
-                if (orderRow != null) orderRowList.add(orderRow);
-                Orders order = new Orders(combined.getId(), combined.getOrderNumber(), orderRowList);
-                orders.add(order);
-            } else {
-                Orders order = orderInList.get();
-                if (orderRow != null) order.getOrderRows().add(orderRow);
-            }
-        }
-
-        return orders;
-    }
-
-    @Override
-    public Orders getOrderById(int parsedKey) {
-        Optional<Orders> orderOptional = getAllOrders().stream()
-                .filter(s -> s.getId().equals(String.valueOf(parsedKey))).findFirst();
-        return orderOptional.orElse(null);
-    }
-
-    @Override
     public Report getReport() {
         String sql = "SELECT " +
                 "COUNT(a.total) AS arv, " +
@@ -118,41 +70,5 @@ public class OrderJPADao {
 
         return report;
     }
-
-*/
-
-//
-//    @Override
-//    public Orders saveOrderByPost(Orders order) {
-//        String sql = "INSERT INTO orders (id, orderNumber, orderRows) " +
-//                "VALUES (NEXT VALUE FOR seq1, ?, null);";
-//
-//        GeneratedKeyHolder holder = new GeneratedKeyHolder();
-//
-//        template.update(conn -> {
-//            PreparedStatement preparedStatement = conn.prepareStatement(sql, new String[]{"id"});
-//            preparedStatement.setString(1, order.getOrderNumber());
-//            return preparedStatement;
-//        }, holder);
-//
-//        order.setId(String.valueOf(holder.getKey().longValue()));
-//
-//        if (order != null && order.getOrderRows() != null) {
-//            for (OrderRow orderRow : order.getOrderRows()) {
-//                String sql2 = "INSERT INTO orderrow (orderId, itemName, quantity, price) " +
-//                        "VALUES (?, ?, ?, ?);";
-//                template.update(conn -> {
-//                    PreparedStatement ps = conn.prepareStatement(sql2);
-//                    ps.setString(1, order.getId());
-//                    ps.setString(2, orderRow.getItemName());
-//                    ps.setInt(3, orderRow.getQuantity());
-//                    ps.setInt(4, orderRow.getPrice());
-//                    return ps;
-//                });
-//            }
-//        }
-//
-//        return order;
-//    }
 
 }

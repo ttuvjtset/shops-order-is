@@ -20,7 +20,7 @@ public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
     @SequenceGenerator(name = "my_seq", sequenceName = "order_sequence", allocationSize = 1)
-    long id;
+    Long id;
 
     @Column(name="order_number")
     @Size(min = 2)
@@ -38,8 +38,9 @@ public class Orders {
             joinColumns = @JoinColumn(name = "orders_id",
                     referencedColumnName = "id")
     )
+    @Valid
     private List<OrderRow> orderRows = new ArrayList<>();
-//    @Valid
+//
 //    ArrayList<OrderRow> orderRows;
 
 }

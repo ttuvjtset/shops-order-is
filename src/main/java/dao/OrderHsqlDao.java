@@ -29,7 +29,7 @@ public class OrderHsqlDao implements OrderDao {
                 "FROM orders LEFT JOIN orderrow ON orderrow.orderId = orders.id;";
 
         List<OrderAndRowCombined> orderAndRowCombined = template.query(sql, (rs, rowNum) -> new OrderAndRowCombined(
-                rs.getString("id"),
+                rs.getLong("id"),
                 rs.getString("orderNumber"),
                 rs.getString("itemName"),
                 rs.getInt("quantity"),
@@ -68,9 +68,9 @@ public class OrderHsqlDao implements OrderDao {
     }
 
     @Override
-    public Orders getOrderById(int parsedKey) {
+    public Orders getOrderById(long parsedKey) {
         Optional<Orders> orderOptional = getAllOrders().stream()
-                .filter(s -> s.getId().equals(String.valueOf(parsedKey))).findFirst();
+                .filter(s -> s.getId().equals(parsedKey)).findFirst();
         return orderOptional.orElse(null);
     }
 
@@ -96,7 +96,7 @@ public class OrderHsqlDao implements OrderDao {
     }
 
     @Override
-    public void deleteOrderById(String id) {
+    public void deleteOrderById(long id) {
         String sqlOrders = "DELETE FROM orders WHERE id=?";
         String sqlOrderRow = "DELETE FROM orderrow WHERE orderId=?";
 
@@ -126,7 +126,7 @@ public class OrderHsqlDao implements OrderDao {
             return preparedStatement;
         }, holder);
 
-        order.setId(String.valueOf(holder.getKey().longValue()));
+        order.setId(holder.getKey().longValue());
 
         if (order != null && order.getOrderRows() != null) {
             for (OrderRow orderRow : order.getOrderRows()) {
@@ -134,7 +134,7 @@ public class OrderHsqlDao implements OrderDao {
                         "VALUES (?, ?, ?, ?);";
                 template.update(conn -> {
                     PreparedStatement ps = conn.prepareStatement(sql2);
-                    ps.setString(1, order.getId());
+                    ps.setLong(1, order.getId());
                     ps.setString(2, orderRow.getItemName());
                     ps.setInt(3, orderRow.getQuantity());
                     ps.setInt(4, orderRow.getPrice());

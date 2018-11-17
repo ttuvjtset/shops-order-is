@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderAndRowCombined {
-    String id;
+    Long id;
     String orderNumber;
     String itemName;
     int quantity;
