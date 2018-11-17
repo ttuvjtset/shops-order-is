@@ -46,10 +46,12 @@ public class OrderController {
         return dao.saveOrderByPost(order);
     }
 
-//    @PostMapping("orders/form")
-//    public Order saveOrderByForm(@RequestParam Map<String, String> body) {
-//        Order order = new Order();
-//        order.setOrderNumber(body.get("orderNumber"));
-//        return dao.saveOrderByPost(order);
-//    }
+    @PostMapping("orders/form")
+    public Order saveOrderByForm(@RequestParam String orderNumber) {
+        // no validation!
+        // not the right url -> api/orders/form
+        Order order = new Order();
+        order.setOrderNumber(orderNumber);
+        return dao.saveOrderByPost(order);
+    }
 }
