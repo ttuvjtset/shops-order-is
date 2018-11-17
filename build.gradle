@@ -16,6 +16,17 @@ dependencies {
     compile group: 'org.springframework', name: 'spring-webmvc', version: springVersion
     compile group: 'org.springframework', name: 'spring-jdbc', version: springVersion
     compile group: 'org.hibernate', name: 'hibernate-validator', version: '6.0.2.Final'
+    compile group: 'org.hibernate',
+            name: 'hibernate-core',
+            version: '5.3.7.Final'
+    compile group: 'org.springframework',
+            name: 'spring-context',
+            version: springVersion
+
+    compile group: 'org.springframework',
+            name: 'spring-orm',
+            version: springVersion
+
 
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
     compileOnly 'org.projectlombok:lombok:1.18.2'
