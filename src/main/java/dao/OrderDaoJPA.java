@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.OptionalDouble;
 
 @Repository
-public class OrderDaoJPA implements OrderDao {
+public class OrderDaoJPA {
 //    @Autowired
 //    private JdbcTemplate template;
 
