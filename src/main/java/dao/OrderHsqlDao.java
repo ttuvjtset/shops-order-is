@@ -35,26 +35,11 @@ public class OrderHsqlDao implements OrderDao {
                 rs.getInt("price")
         ));
 
-        Map<String, Order> orders = new ArrayList<>();
-
-        template.query(sql, (rs, rowNum) -> {
-                String id = rs.getString("id");
-
-               // does orders list contain order with id id
-
-               // order = constainsOrderWithId(ordeers, id);
-
-
-
-               if (order == null) {
-                   order = new Order();
-
-               }
-
-                return null;
-
-                }
-        );
+        template.query(sql, (rs, rowNum) -> new OrderRow(
+                rs.getString("itemName"),
+                rs.getInt("quantity"),
+                rs.getInt("price")
+        ));
 
         List<Order> orders = new ArrayList<>();
 
@@ -98,7 +83,7 @@ public class OrderHsqlDao implements OrderDao {
                 "SUM(a.total)*1.2 AS turnoverWithVAT\n" +
                 "FROM (SELECT orderId, SUM(quantity*price) AS total FROM orderrow GROUP BY orderId) AS a;";
 
-        List<Report> reports = template.queryForObject(sql, (rs, rowNum) -> new Report(
+        Report report = template.queryForObject(sql, (rs, rowNum) -> new Report(
                 rs.getInt("arv"),
                 rs.getInt("averageOrderAmount"),
                 rs.getInt("turnoverWithoutVAT"),
@@ -106,7 +91,7 @@ public class OrderHsqlDao implements OrderDao {
                 rs.getInt("turnoverWithVAT")
         ));
 
-        return reports.get(0);
+        return report;
     }
 
     @Override
