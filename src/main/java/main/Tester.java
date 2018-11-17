@@ -1,7 +1,7 @@
 package main;
 
 import conf.DbConfig;
-import dao.OrderJPADao;
+import dao.OrderDaoJPA;
 import model.OrderRow;
 import model.Orders;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -14,44 +14,20 @@ public class Tester {
         ConfigurableApplicationContext ctx =
               new AnnotationConfigApplicationContext(DbConfig.class);
 
-        OrderJPADao dao = ctx.getBean(OrderJPADao.class);
+        OrderDaoJPA dao = ctx.getBean(OrderDaoJPA.class);
 
         dao.saveOrderByPost(new Orders("A52"));
-        Orders dd = new Orders("dd");
-        dd.getOrderRows().add(new OrderRow("gg",2,100));
-        dd.getOrderRows().add(new OrderRow("zz",2,100));
-        dao.saveOrderByPost(dd);
+
+        Orders order2 = new Orders("order2");
+        order2.getOrderRows().add(new OrderRow("gg",2,100));
+        order2.getOrderRows().add(new OrderRow("zz",2,100));
+
+        dao.saveOrderByPost(order2);
+
         System.out.println(dao.getAllOrders());
         //dao.deleteOrderById(1L);
         System.out.println(dao.getOrderById(2));
         System.out.println(dao.getAllOrders());
-
-
-
-//        PersonDao dao = ctx.getBean(PersonDao.class);
-//
-//
-//        Person jill = new Person("jill");
-
-//
-//        Address jillAddress = new Address("kase 2");
-//     //   dao.saveAddress(jillAddress);
-//        jill.setAddress(jillAddress);
-//        jill.getPhones().add(new Phone("222"));
-//        dao.save(jill);
-//
-//        System.out.println(dao.getAllOrders());
-//
-//        Person person = dao.findPersonByName("jill");
-//
-//        System.out.println(person);
-//
-//        person.setName("jane");
-//
-//        dao.save(person);
-//
-//        System.out.println(dao.getAllOrders());
-
 
         ctx.close();
     }

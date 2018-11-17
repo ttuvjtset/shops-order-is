@@ -1,7 +1,6 @@
 package controller;
 
 import dao.OrderDao;
-import dao.OrderJPADao;
 import model.Orders;
 import model.Report;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import java.util.List;
 public class OrderController {
 
     @Autowired
-    private OrderJPADao dao;
+    private OrderDao dao;
 
     @GetMapping("orders")
     public List<Orders> getAllOrders() {

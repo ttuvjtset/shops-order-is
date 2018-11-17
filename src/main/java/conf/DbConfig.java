@@ -39,18 +39,16 @@ public class DbConfig {
 //        new JdbcTemplate(ds)
 //                .update(FileUtil.readFileFromClasspath("data.sql"));
 
-
         new JdbcTemplate(ds).update(
                 FileUtil.readFileFromClasspath("schema2.sql"));
-
 
         return ds;
     }
 
-    @Bean
-    public JdbcTemplate getTemplate() {
-        return new JdbcTemplate(dataSource());
-    }
+//    @Bean
+//    public JdbcTemplate getTemplate() {
+//        return new JdbcTemplate(dataSource());
+//    }
 
     @Bean
     public PlatformTransactionManager transactionManager(

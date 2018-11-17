@@ -30,8 +30,6 @@ public class Orders {
         this.orderNumber = orderNumber;
     }
 
-//    @ElementCollection(fetch = FetchType.EAGER)
-
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "order_rows",
@@ -40,7 +38,5 @@ public class Orders {
     )
     @Valid
     private List<OrderRow> orderRows = new ArrayList<>();
-//
-//    ArrayList<OrderRow> orderRows;
 
 }
