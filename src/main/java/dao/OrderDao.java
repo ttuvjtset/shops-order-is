@@ -1,15 +1,15 @@
 package dao;
 
-import model.Order;
+import model.Orders;
 import model.Report;
 
 import java.util.List;
 
 
 public interface OrderDao {
-    List<Order> getAllOrders();
+    List<Orders> getAllOrders();
 
-    Order getOrderById(int parsedKey);
+    Orders getOrderById(int parsedKey);
 
     Report getReport();
 
@@ -17,5 +17,5 @@ public interface OrderDao {
 
     void deleteAllOrders();
 
-    Order saveOrderByPost(Order order);
+    Orders saveOrderByPost(Orders orders);
 }

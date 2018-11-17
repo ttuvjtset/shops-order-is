@@ -1,14 +1,13 @@
 package controller;
 
 import dao.OrderDao;
-import model.Order;
+import model.Orders;
 import model.Report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class OrderController {
@@ -17,12 +16,12 @@ public class OrderController {
     private OrderDao dao;
 
     @GetMapping("orders")
-    public List<Order> getAllOrders() {
+    public List<Orders> getAllOrders() {
         return dao.getAllOrders();
     }
 
     @GetMapping("orders/{orderId}")
-    public Order getOrderById(@PathVariable String orderId) {
+    public Orders getOrderById(@PathVariable String orderId) {
         return dao.getOrderById(Integer.valueOf(orderId));
     }
 
@@ -42,16 +41,16 @@ public class OrderController {
     }
 
     @PostMapping("orders")
-    public Order saveOrderByPost(@RequestBody @Valid Order order) {
-        return dao.saveOrderByPost(order);
+    public Orders saveOrderByPost(@RequestBody @Valid Orders orders) {
+        return dao.saveOrderByPost(orders);
     }
 
     @PostMapping("orders/form")
-    public Order saveOrderByForm(@RequestParam String orderNumber) {
+    public Orders saveOrderByForm(@RequestParam String orderNumber) {
         // no validation!
         // not the right url -> api/orders/form
-        Order order = new Order();
-        order.setOrderNumber(orderNumber);
-        return dao.saveOrderByPost(order);
+        Orders orders = new Orders();
+        orders.setOrderNumber(orderNumber);
+        return dao.saveOrderByPost(orders);
     }
 }

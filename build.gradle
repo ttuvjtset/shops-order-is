@@ -26,8 +26,48 @@ dependencies {
     compile group: 'org.springframework',
             name: 'spring-orm',
             version: springVersion
+    compile group: 'javax.xml.bind',
+            name: 'jaxb-api',
+            version: '2.4.0-b180830.0359'
 
 
+
+    compile group: 'org.springframework',
+            name: 'spring-context',
+            version: springVersion
+
+    compile group: 'org.springframework',
+            name: 'spring-orm',
+            version: springVersion
+
+    compile group: 'org.hibernate',
+            name: 'hibernate-core',
+            version: '5.3.7.Final'
+
+    compile group: 'javax.xml.bind',
+            name: 'jaxb-api',
+            version: '2.4.0-b180830.0359'
+
+    compile group: 'org.hsqldb',
+            name: 'hsqldb',
+            version: '2.4.1'
+
+    compile group: 'org.apache.logging.log4j',
+            name: 'log4j-api',
+            version: '2.11.1'
+
+    compile group: 'org.apache.logging.log4j',
+            name: 'log4j-core',
+            version: '2.11.1'
+
+    compileOnly group: 'org.projectlombok',
+            name: 'lombok',
+            version: '1.18.2'
+
+    annotationProcessor group: 'org.projectlombok',
+            name: 'lombok',
+            version: '1.18.2'
+    
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
     compileOnly 'org.projectlombok:lombok:1.18.2'
     annotationProcessor 'org.projectlombok:lombok:1.18.2'

@@ -1,27 +1,51 @@
-/*
 package dao;
 
 import model.Orders;
-import model.OrderAndRowCombined;
-import model.OrderRow;
-import model.Report;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
-@Primary
 @Repository
-public class OrderHsqlDao implements OrderDao {
+public class OrderJPADao {
 
-    @Autowired
-    private JdbcTemplate template;
+    @PersistenceContext
+    private EntityManager em;
+
+    @Transactional
+    public Orders saveOrderByPost(Orders orders) {
+        em.persist(orders);
+
+        return orders;
+    }
+
+    public List<Orders> findAll() {
+        return em.createQuery("select p from Orders p", Orders.class).getResultList();
+    }
+
+    @Transactional
+    public void deleteOrderById(long id) {
+        Query query = em.createQuery("DELETE FROM Orders AS o where o.id=:id");
+        query.setParameter("id", id);
+        query.executeUpdate();
+
+//        Query query = Orders.entityManager().createQuery(
+//                "DELETE FROM Seller AS o WHERE o.company=:company AND o.id=:id");
+//        query.setParameter("company", company);
+//        query.setParameter("id", id);
+//        int result = query.executeUpdate();
+    }
+
+
+    public void deleteAllOrders() {
+        em.createQuery("DELETE FROM Orders").executeUpdate();
+    }
+
+/*
 
     @Override
     public List<Orders> getAllOrders() {
@@ -95,55 +119,40 @@ public class OrderHsqlDao implements OrderDao {
         return report;
     }
 
-    @Override
-    public void deleteOrderById(String id) {
-        String sqlOrders = "DELETE FROM orders WHERE id=?";
-        String sqlOrderRow = "DELETE FROM orderrow WHERE orderId=?";
-
-        template.update(sqlOrders, id);
-        template.update(sqlOrderRow, id);
-    }
-
-    @Override
-    public void deleteAllOrders() {
-        String sqlOrders = "DELETE FROM orders";
-        String sqlOrderRow = "DELETE FROM orderrow";
-
-        template.update(sqlOrders);
-        template.update(sqlOrderRow);
-    }
-
-    @Override
-    public Orders saveOrderByPost(Orders order) {
-        String sql = "INSERT INTO orders (id, orderNumber, orderRows) " +
-                "VALUES (NEXT VALUE FOR seq1, ?, null);";
-
-        GeneratedKeyHolder holder = new GeneratedKeyHolder();
-
-        template.update(conn -> {
-            PreparedStatement preparedStatement = conn.prepareStatement(sql, new String[]{"id"});
-            preparedStatement.setString(1, order.getOrderNumber());
-            return preparedStatement;
-        }, holder);
-
-        order.setId(String.valueOf(holder.getKey().longValue()));
-
-        if (order != null && order.getOrderRows() != null) {
-            for (OrderRow orderRow : order.getOrderRows()) {
-                String sql2 = "INSERT INTO orderrow (orderId, itemName, quantity, price) " +
-                        "VALUES (?, ?, ?, ?);";
-                template.update(conn -> {
-                    PreparedStatement ps = conn.prepareStatement(sql2);
-                    ps.setString(1, order.getId());
-                    ps.setString(2, orderRow.getItemName());
-                    ps.setInt(3, orderRow.getQuantity());
-                    ps.setInt(4, orderRow.getPrice());
-                    return ps;
-                });
-            }
-        }
-
-        return order;
-    }
-}
 */
+
+//
+//    @Override
+//    public Orders saveOrderByPost(Orders order) {
+//        String sql = "INSERT INTO orders (id, orderNumber, orderRows) " +
+//                "VALUES (NEXT VALUE FOR seq1, ?, null);";
+//
+//        GeneratedKeyHolder holder = new GeneratedKeyHolder();
+//
+//        template.update(conn -> {
+//            PreparedStatement preparedStatement = conn.prepareStatement(sql, new String[]{"id"});
+//            preparedStatement.setString(1, order.getOrderNumber());
+//            return preparedStatement;
+//        }, holder);
+//
+//        order.setId(String.valueOf(holder.getKey().longValue()));
+//
+//        if (order != null && order.getOrderRows() != null) {
+//            for (OrderRow orderRow : order.getOrderRows()) {
+//                String sql2 = "INSERT INTO orderrow (orderId, itemName, quantity, price) " +
+//                        "VALUES (?, ?, ?, ?);";
+//                template.update(conn -> {
+//                    PreparedStatement ps = conn.prepareStatement(sql2);
+//                    ps.setString(1, order.getId());
+//                    ps.setString(2, orderRow.getItemName());
+//                    ps.setInt(3, orderRow.getQuantity());
+//                    ps.setInt(4, orderRow.getPrice());
+//                    return ps;
+//                });
+//            }
+//        }
+//
+//        return order;
+//    }
+
+}

@@ -21,9 +21,10 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@PropertySource("classpath:/application.properties")
 @ComponentScan(basePackages = {"dao"})
+@PropertySource("classpath:/application.properties")
 public class DbConfig {
+
     @Autowired
     public Environment env;
 
@@ -39,8 +40,8 @@ public class DbConfig {
 //                .update(FileUtil.readFileFromClasspath("data.sql"));
 
 
-//        new JdbcTemplate(ds).update(
-//                FileUtil.readFileFromClasspath("schema2.sql"));
+        new JdbcTemplate(ds).update(
+                FileUtil.readFileFromClasspath("schema2.sql"));
 
 
         return ds;
@@ -72,10 +73,10 @@ public class DbConfig {
 
     private Properties additionalProperties() {
         Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto", "update");
+        properties.setProperty("hibernate.hbm2ddl.auto", "validate");
         properties.setProperty("hibernate.dialect",
                 "org.hibernate.dialect.HSQLDialect");
-        properties.setProperty("hibernate.show_sql", "true");
+        properties.setProperty("hibernate.show_sql", "false");
         properties.setProperty("hibernate.format_sql", "true");
 
         return properties;

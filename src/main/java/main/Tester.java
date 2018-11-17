@@ -1,6 +1,9 @@
 package main;
 
 import conf.DbConfig;
+import dao.OrderJPADao;
+import model.OrderRow;
+import model.Orders;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -11,11 +14,24 @@ public class Tester {
         ConfigurableApplicationContext ctx =
               new AnnotationConfigApplicationContext(DbConfig.class);
 
+        OrderJPADao dao = ctx.getBean(OrderJPADao.class);
+
+       // Orders orders = new Orders("A52");
+        Orders dd = new Orders("dd");
+        dd.getOrderRows().add(new OrderRow("gg",2,100));
+        dd.getOrderRows().add(new OrderRow("zz",2,100));
+        dao.saveOrderByPost(dd);
+        System.out.println(dao.findAll());
+        dao.deleteOrderById(1L);
+        System.out.println(dao.findAll());
+
+
+
 //        PersonDao dao = ctx.getBean(PersonDao.class);
 //
 //
 //        Person jill = new Person("jill");
-//        dao.save(new Person("dd"));
+
 //
 //        Address jillAddress = new Address("kase 2");
 //     //   dao.saveAddress(jillAddress);
