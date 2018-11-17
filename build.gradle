@@ -40,7 +40,7 @@ dependencies {
     compile group: 'org.hibernate',
             name: 'hibernate-core',
             version: '5.3.7.Final'
-    
+
 
     compile group: 'org.hsqldb',
             name: 'hsqldb',
@@ -61,7 +61,7 @@ dependencies {
     annotationProcessor group: 'org.projectlombok',
             name: 'lombok',
             version: '1.18.2'
-    
+
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
     compileOnly 'org.projectlombok:lombok:1.18.2'
     annotationProcessor 'org.projectlombok:lombok:1.18.2'
@@ -73,4 +73,5 @@ dependencies {
 
 gretty {
     contextPath = '/'
+    servletContainer = 'jetty9.4'
 }

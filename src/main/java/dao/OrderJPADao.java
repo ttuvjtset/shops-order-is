@@ -1,5 +1,6 @@
 package dao;
 
+import model.OrderRow;
 import model.Orders;
 import model.Report;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,10 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalDouble;
 
 @Repository
 public class OrderJPADao{
@@ -52,23 +56,61 @@ public class OrderJPADao{
 
 
     public Report getReport() {
-        String sql = "SELECT " +
-                "COUNT(a.total) AS arv, " +
-                "AVG(a.total) AS averageOrderAmount, " +
-                "SUM(a.total) AS turnoverWithoutVAT, " +
-                "SUM(a.total)*.2 AS turnoverVAT, " +
-                "SUM(a.total)*1.2 AS turnoverWithVAT\n" +
-                "FROM (SELECT orderId, SUM(quantity*price) AS total FROM orderrow GROUP BY orderId) AS a;";
+        List<Orders> allOrders = getAllOrders();
+        List<Integer> priceQuantityProducts = new ArrayList<>();
+        int turnoverWithoutVAT = 0;
+        for (Orders allOrder : allOrders) {
+            int priceQuantityProduct = 0;
+            for (OrderRow order : allOrder.getOrderRows()) {
+                priceQuantityProduct += order.getPrice()*order.getQuantity();
+            }
+            priceQuantityProducts.add(priceQuantityProduct);
+            turnoverWithoutVAT += priceQuantityProduct;
+        }
 
-        Report report = template.queryForObject(sql, (rs, rowNum) -> new Report(
-                rs.getInt("arv"),
-                rs.getInt("averageOrderAmount"),
-                rs.getInt("turnoverWithoutVAT"),
-                rs.getInt("turnoverVAT"),
-                rs.getInt("turnoverWithVAT")
-        ));
+        System.out.println(priceQuantityProducts);
 
-        return report;
+        int ordersCount = priceQuantityProducts.size();
+        int averageOrderAmount = 0;
+        OptionalDouble averageOrderAmountOptional = priceQuantityProducts.stream().mapToInt(Integer::intValue).average();
+        if (averageOrderAmountOptional.isPresent()) {
+            averageOrderAmount = (int) averageOrderAmountOptional.getAsDouble();
+        }
+        int turnoverVAT = (int) (turnoverWithoutVAT * 0.2);
+        int turnoverWithVAT = (int) (turnoverWithoutVAT * 1.2);
+
+        return new Report(ordersCount,averageOrderAmount,turnoverWithoutVAT, turnoverVAT, turnoverWithVAT);
+
+
+
+//
+//        String sql = "SELECT " +
+//                "COUNT(a.total) AS arv, " +
+//                "AVG(a.total) AS averageOrderAmount, " +
+//                "SUM(a.total) AS turnoverWithoutVAT, " +
+//                "SUM(a.total)*.2 AS turnoverVAT, " +
+//                "SUM(a.total)*1.2 AS turnoverWithVAT\n" +
+//                "FROM Orders a GROUP BY id";
+//
+//        List<Orders> resultList = em.createQuery(sql, Orders.class).getResultList();
+//
+//        System.out.println(resultList);
+
+        //SELECT d, COUNT(e), MAX(e.salary), AVG(e.salary)
+        //FROM Department d JOIN d.employees e
+        //GROUP BY d
+        //HAVING COUNT(e) >= 5
+
+
+//        Report report = template.queryForObject(sql, (rs, rowNum) -> new Report(
+//                rs.getInt("arv"),
+//                rs.getInt("averageOrderAmount"),
+//                rs.getInt("turnoverWithoutVAT"),
+//                rs.getInt("turnoverVAT"),
+//                rs.getInt("turnoverWithVAT")
+//        ));
+
+       // return null;
     }
 
 }
