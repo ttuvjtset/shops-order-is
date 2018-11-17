@@ -13,6 +13,8 @@ sourceCompatibility = 8
 def springVersion = '5.1.0.RELEASE'
 
 dependencies {
+    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
+
     compile group: 'org.springframework', name: 'spring-webmvc', version: springVersion
     compile group: 'org.springframework', name: 'spring-jdbc', version: springVersion
     compile group: 'org.hibernate', name: 'hibernate-validator', version: '6.0.2.Final'
@@ -70,6 +72,10 @@ dependencies {
     compile group: 'org.hsqldb', name: 'hsqldb', version: '2.4.1'
     compile group: 'commons-dbcp', name: 'commons-dbcp', version: '1.4'
 }
+
+
+
+
 
 gretty {
     contextPath = '/'
