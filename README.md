@@ -6,4 +6,5 @@
  - Gradle 
  - Spring Boot 
  - Hibernate 
- - HyperSQL Database
+ - JSR-303 validation
+ - HyperSQL in memory db
